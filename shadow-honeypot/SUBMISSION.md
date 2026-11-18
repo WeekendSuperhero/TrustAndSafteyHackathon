@@ -6,7 +6,7 @@
 **Demo:** `python3 sim.py --show-game 121 --rogue sneaky` (honeypot silently catches the rogue in round 6, baseline never does) and `python3 sim.py --show-game 5 --rogue sneaky` (honeypot misses the rogue and quarantines an honest agent)
 
 ## Team card
-**Team name:** 
+**Team name:** Synthwave
 **Team number:** 2
 **Statement number** (the card your corner wrote): 
 **First names:** Febe, Apruv, Mark, Andrew
