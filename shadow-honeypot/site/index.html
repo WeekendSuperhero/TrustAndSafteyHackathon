@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shadow Honeypot: spot the rogue agent without firing the honest ones</title>
+<meta name="description" content="A monitor for multi agent ledger work that wrongly removes 2 to 3 times fewer honest AI agents than the two strike rule. Team Synthwave, SF Impact Lab, Track 2.">
+<meta property="og:title" content="Shadow Honeypot">
+<meta property="og:description" content="The two strike rule removes 1.5 honest agents per job. Ours removes 0.5.">
+<meta property="og:image" content="poster.jpg">
+<style>
+  :root { --cyan:#05d9e8; --pink:#ff2a8c; --yellow:#ffd319; --purple:#aa78ff; --ink:#f5f0ff; --lilac:#beaaff; --bg:#08021c; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin:0; color:var(--ink); background:var(--bg); font: 18px/1.55 "Avenir Next", "Segoe UI", system-ui, sans-serif; overflow-x:hidden; }
+  a { color:var(--cyan); }
+  .sky { position:relative; padding: 56px 20px 0; text-align:center;
+    background: radial-gradient(ellipse 60% 46% at 50% 78%, rgba(255,60,140,.55), transparent 70%),
+                linear-gradient(#08021c 0%, #2a0a52 62%, #7a1763 88%, #ff4690 100%); }
+  .sun { position:absolute; left:50%; bottom:0; width:min(420px,70vw); aspect-ratio:2/1; transform:translateX(-50%);
+    border-radius: 999px 999px 0 0; background: linear-gradient(#ffe850, #ff8246 55%, #ff2a96);
+    -webkit-mask: repeating-linear-gradient(#000 0 22px, transparent 22px 30px); mask: repeating-linear-gradient(#000 0 22px, transparent 22px 30px);
+    filter: drop-shadow(0 0 40px rgba(255,70,150,.8)); opacity:.9; }
+  .eyebrow { font: 700 15px/1 "DIN Condensed", "Arial Narrow", sans-serif; letter-spacing:.28em; color:var(--cyan); text-shadow:0 0 12px rgba(5,217,232,.8); position:relative; }
+  h1 { margin: 18px 0 6px; font: italic 400 clamp(46px, 11vw, 128px)/.95 Impact, "Haettenschweiler", "Arial Narrow Bold", sans-serif; letter-spacing:.02em;
+    background: linear-gradient(#78faff 0%, #fff 42%, #46148c 50%, #ff3cc8 56%, #ffe15a 100%); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter: drop-shadow(0 0 2px #ff2ab4) drop-shadow(0 0 18px rgba(255,42,180,.75)); position:relative; }
+  .hero-copy { position:relative; max-width: 900px; margin: 0 auto; padding-bottom: 150px; }
+  .headline { font: 700 clamp(24px, 4.2vw, 40px)/1.15 "Avenir Next", system-ui, sans-serif; margin: 26px 0 12px; text-shadow: 0 2px 18px #08021c; }
+  .headline b { color: var(--yellow); }
+  .sub { color: var(--ink); max-width: 720px; margin: 0 auto; text-shadow: 0 2px 14px #08021c; }
+  .floor { position:relative; background: #0a0220; border-top: 2px solid #ff96dc; box-shadow: 0 -4px 30px rgba(255,42,180,.7); }
+  .floor::before { content:""; position:absolute; inset:0; height:520px; pointer-events:none; opacity:.55;
+    background: linear-gradient(transparent 0, #0a0220 100%),
+      repeating-linear-gradient(90deg, rgba(255,42,180,.55) 0 2px, transparent 2px 80px),
+      repeating-linear-gradient(0deg, rgba(255,42,180,.55) 0 2px, transparent 2px 60px);
+    transform: perspective(420px) rotateX(58deg); transform-origin: top center; }
+  main { position:relative; max-width: 1000px; margin: 0 auto; padding: 0 20px 80px; }
+  .video { margin: -120px auto 0; position:relative; border-radius: 16px; overflow:hidden; border: 2px solid var(--pink);
+    box-shadow: 0 0 0 1px rgba(5,217,232,.5), 0 0 60px rgba(255,42,140,.55), 0 30px 80px rgba(0,0,0,.7); background:#000; }
+  video { display:block; width:100%; height:auto; }
+  .cta { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin: 30px 0 8px; }
+  .btn { display:inline-block; padding: 14px 26px; border-radius: 10px; font-weight: 800; text-decoration:none; letter-spacing:.02em; }
+  .btn.primary { background: var(--cyan); color:#04121a; box-shadow: 0 0 26px rgba(5,217,232,.7); }
+  .btn.ghost { border: 2px solid var(--pink); color: var(--ink); }
+  .micro { text-align:center; color: var(--lilac); font-size: 15px; margin: 0; }
+  h2 { font: 700 15px/1 "DIN Condensed", "Arial Narrow", sans-serif; letter-spacing:.28em; color: var(--pink); text-shadow:0 0 12px rgba(255,42,140,.8); margin: 76px 0 22px; text-transform: uppercase; }
+  .stats { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .card { background: rgba(14,4,36,.92); border: 1px solid rgba(255,42,140,.6); border-radius: 14px; padding: 22px; }
+  .card.cyan { border-color: rgba(5,217,232,.7); }
+  .card.yellow { border-color: rgba(255,211,25,.7); }
+  .big { font: italic 400 64px/1 Impact, "Arial Narrow Bold", sans-serif; }
+  .big small { font-size: 26px; color: var(--lilac); }
+  .cyan .big { color: var(--cyan); text-shadow: 0 0 22px rgba(5,217,232,.7); }
+  .pink .big { color: var(--pink); text-shadow: 0 0 22px rgba(255,42,140,.7); }
+  .yellow .big { color: var(--yellow); text-shadow: 0 0 22px rgba(255,211,25,.6); }
+  .card p { margin: 10px 0 0; color: var(--ink); }
+  .card .note { color: var(--lilac); font-size: 15px; }
+  ol.steps { list-style: none; padding: 0; margin: 0; display:grid; gap: 14px; counter-reset: s; }
+  ol.steps li { counter-increment: s; background: rgba(14,4,36,.92); border-left: 4px solid var(--purple); border-radius: 0 12px 12px 0; padding: 16px 20px 16px 64px; position:relative; }
+  ol.steps li::before { content: counter(s); position:absolute; left: 20px; top: 12px; font: italic 400 34px/1 Impact, sans-serif; color: var(--purple); }
+  ol.steps b { color: var(--cyan); }
+  table { width:100%; border-collapse: collapse; background: rgba(14,4,36,.92); border-radius: 14px; overflow:hidden; }
+  th, td { padding: 13px 14px; text-align: right; border-bottom: 1px solid rgba(190,170,255,.18); }
+  th:first-child, td:first-child { text-align:left; }
+  th { font: 700 14px/1.2 "DIN Condensed", "Arial Narrow", sans-serif; letter-spacing:.14em; color: var(--lilac); text-transform: uppercase; }
+  td.win { color: var(--cyan); font-weight: 800; }
+  td.lose { color: var(--pink); font-weight: 800; }
+  ul.limits { padding-left: 22px; }
+  ul.limits li { margin: 8px 0; }
+  code { font: 15px/1.4 Menlo, Consolas, monospace; background:#04000c; border:1px solid rgba(5,217,232,.6); color: var(--cyan); padding: 12px 16px; border-radius: 10px; display:block; overflow-x:auto; white-space:nowrap; }
+  footer { color: var(--lilac); font-size: 14px; border-top: 1px solid rgba(190,170,255,.2); margin-top: 70px; padding-top: 22px; }
+  @media (max-width: 600px) { .video { margin-top: -90px; } .big { font-size: 52px; } }
+</style>
+</head>
+<body>
+<header class="sky">
+  <div class="sun" aria-hidden="true"></div>
+  <div class="hero-copy">
+    <div class="eyebrow">TEAM SYNTHWAVE / SF IMPACT LAB / TRACK 2</div>
+    <h1>SHADOW HONEYPOT</h1>
+    <p class="headline">The two strike rule removes <b>1.5</b> honest agents per job. Ours removes <b>0.5</b>.</p>
+    <p class="sub">In a 12 round job it also catches patient rogues less often: 45% against 64%. Give it 24 rounds and it catches more: 88% against 81%. We measured both, and both are on this page.</p>
+  </div>
+</header>
+
+<div class="floor">
+<main>
+  <div class="video">
+    <video controls playsinline preload="metadata" poster="poster.jpg">
+      <source src="shadow-honeypot.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <div class="cta">
+    <a class="btn primary" href="https://github.com/WeekendSuperhero/TrustAndSafteyHackathon/tree/main/shadow-honeypot">Run it yourself on GitHub</a>
+    <a class="btn ghost" href="https://github.com/WeekendSuperhero/TrustAndSafteyHackathon/blob/main/shadow-honeypot/SUBMISSION.md">Read the full results</a>
+  </div>
+  <p class="micro">Python 3 only. No API key. Runs in about a second.</p>
+
+  <h2>The problem</h2>
+  <p>Five AI agents reconcile your ledger. One of them is padding invoices and writing perfectly reasonable notes. The usual safeguard is two disagreements and you are out. Over 200 simulated jobs against a sneaky rogue, that rule removed 1.44 honest agents per job for ordinary typos. A monitor that keeps accusing the wrong worker gets ignored, and then it protects nobody.</p>
+
+  <h2>What we measured</h2>
+  <div class="stats">
+    <div class="card cyan"><div class="big">0.51 <small>vs 1.44</small></div><p>honest agents removed per job, against the two strike rule.</p><p class="note">The same 200 simulated jobs. Sneaky rogue. 12 rounds.</p></div>
+    <div class="card pink"><div class="big">45% <small>vs 64%</small></div><p>of sneaky rogues caught in a 12 round job. That is the price.</p><p class="note">At 24 rounds it flips: 88% against 81%.</p></div>
+    <div class="card yellow"><div class="big">0.782</div><p>AUROC at spotting impostors from speech alone.</p><p class="note">971 held out player games from the AmongUs research sandbox, 400 real LLM games. Random guessing scores 0.5.</p></div>
+  </div>
+
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><b>Score, do not strike.</b> Every agent carries a suspicion score. Agreeing with a partner lowers it. Disagreeing raises it, and more so when the same agent keeps pushing the total one way against different partners, or writes a note that reads like real LLM impostors.</li>
+    <li><b>Test the suspect.</b> An agent between 40 and 69 is paired next round with the lowest scoring agent. This is the canary check.</li>
+    <li><b>Quarantine in silence.</b> At 70 the agent is not told. It keeps getting work and receipts that say committed, while its numbers go to a shadow ledger that nobody uses.</li>
+    <li><b>Let honest agents back in.</b> Shadow answers are still scored. If the score falls under 40, the agent is reinstated.</li>
+  </ol>
+  <p class="micro" style="margin-top:14px">The monitor never sees the true value. Every signal comes from what two agents posted.</p>
+
+  <h2>Give it a longer job</h2>
+  <table>
+    <tr><th>Rounds</th><th>Two strikes: rogues caught</th><th>Honeypot: rogues caught</th><th>Honest agents out at the end (two strikes / honeypot)</th></tr>
+    <tr><td>12 (the Track 2 spec)</td><td class="win">64.0%</td><td class="lose">45.0%</td><td>1.44 / 0.48</td></tr>
+    <tr><td>24</td><td>81.0%</td><td class="win">88.0%</td><td>2.12 / 0.96</td></tr>
+    <tr><td>48</td><td>82.0%</td><td class="win">100.0%</td><td>2.18 / 1.20</td></tr>
+  </table>
+  <p class="micro" style="text-align:left;margin-top:12px">Sneaky rogue, 200 simulated jobs per row, same monitor and seed with no retuning. The two strike rule stalls near 82% because its quarantines are permanent: after three removals it cannot make a fourth. Over 48 rounds the honeypot quarantines more honest agents at some point along the way (2.85 per job against 2.18), then reinstates most of them.</p>
+
+  <h2>What still fools it</h2>
+  <ul class="limits">
+    <li>A patient rogue can keep a clean score and get picked as the trusted agent for canary checks.</li>
+    <li>Two agents who agree on the same fake number never trigger a disagreement.</li>
+    <li>Every simulation number comes from scripted agents. No live Claude games have been run yet.</li>
+    <li>The note weights were learned on game speech and have not been validated on real ledger notes.</li>
+  </ul>
+  <p>If it were deployed and failed, the finance controller who owns the workflow is accountable. They would find out at the independent reconciliation against bank and vendor statements, which no agent touches.</p>
+
+  <h2>See it catch one</h2>
+  <code>git clone https://github.com/WeekendSuperhero/TrustAndSafteyHackathon &amp;&amp; cd TrustAndSafteyHackathon/shadow-honeypot &amp;&amp; python3 sim.py --show-game 121 --rogue sneaky</code>
+
+  <footer>
+    <p>Team Synthwave: Febe, Apruv, Mark, Andrew. Built at the SF Impact Lab in HERO with Claude.</p>
+    <p>Data: AmongUs research sandbox logs by Satvik Golechha and coauthors (huggingface.co/datasets/7vik/AmongUs, arXiv 2504.04072). The video is drawn and scored entirely in code, with no third party art or music. The robot agents are original characters. This project is not affiliated with the game Among Us or with Innersloth.</p>
+  </footer>
+</main>
+</div>
+</body>
+</html>

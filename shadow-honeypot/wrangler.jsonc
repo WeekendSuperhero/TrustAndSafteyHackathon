@@ -1,0 +1,6 @@
+{
+  // Static site for the Shadow Honeypot explainer video (Cloudflare Workers static assets).
+  "name": "shadow-honeypot",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./site" }
+}

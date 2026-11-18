@@ -16,6 +16,7 @@ What we measured:
 - **45%** of sneaky rogues caught, against 64% for two strikes. That is the price.
 - **0.782** AUROC at spotting impostors from speech alone, on 971 held out player games from real logs. Random guessing scores 0.5.
 
+**Watch the 75 second video:** https://shadow-honeypot.tranquil-haircut.workers.dev (the same file is in this repo at `video/full/shadow-honeypot-full.mp4`)
 **See it catch one:** `python3 sim.py --show-game 121 --rogue sneaky`
 **See it miss one:** `python3 sim.py --show-game 5 --rogue sneaky`
 Python 3 only. No API key. Runs in about a second.
