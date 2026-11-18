@@ -7,7 +7,7 @@
 
 ## Team card
 **Team name:** Synthwave
-**Team number:** 2
+**Team number:** 17
 **Statement number** (the card your corner wrote): 
 **First names:** Febe, Apruv, Mark, Andrew
 
