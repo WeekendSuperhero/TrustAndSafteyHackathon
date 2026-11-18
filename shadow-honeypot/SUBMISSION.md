@@ -1,5 +1,10 @@
 # Submission
 
+**Project:** Shadow Honeypot
+**One-sentence summary:** A monitor for multi-agent ledger work that wrongly accuses 2-3× fewer honest AI agents than the 2-strike rule, using a deception scorer trained on 400 real LLM game logs, and reports plainly that it catches patient rogues less often.
+**Track:** 2, Spot the Rogue Agent
+**Demo:** `python3 sim.py --show-game 121 --rogue sneaky` (honeypot silently catches the rogue in round 6, baseline never does) and `python3 sim.py --show-game 5 --rogue sneaky` (honeypot misses the rogue and quarantines an honest agent)
+
 ## Team card
 **Team name:** 
 **Team number:** 2
@@ -17,8 +22,9 @@ We'll know it worked if **fewer honest agents get quarantined, and we can state 
 **2. What we built, and the one command that runs it:**
 A weighted "Shadow Honeypot" monitor for the Track 2 ledger game. Each agent has a suspicion score. Agreements lower it. Disagreements raise it, more so when the same agent keeps pushing in one direction against different partners or writes a note that looks deceptive. A suspect gets paired with a trusted "anchor" agent as a test. Once caught, an agent is quarantined silently: it keeps getting decoy items and "committed" receipts while its numbers go to a shadow ledger. Its shadow answers keep being scored, so an honest agent caught by mistake can be reinstated. The note scorer's weights are learned from real LLM impostor speech in `amongus-sandbox`.
 ```
-python3 evaluate_amongus.py && python3 sim.py --compare --games 200
+python3 sim.py --compare --games 200
 ```
+This runs from a fresh clone with no API key; learned note weights are committed in `results/`. To reproduce the real-data benchmark: `scripts/fetch_amongus.sh && python3 evaluate_amongus.py`.
 
 **3. Data we used:** `amongus-sandbox` (HuggingFace `7vik/AmongUs`, `expt-logs`). All 4 experiments of 100 games each (Llama-3.3-70B and Phi-4), logged 2025-02-01. 343 games contain public speech, giving 1,936 player-games and 7,402 statements. Train and test are split by game: 965 train, 971 test player-games. Plus 3,000 mock ledger games (200 games × 3 rogue tiers × 5 monitor variants). `agentic-misalignment` was cloned but **not used** in any reported number.
 
