@@ -1,4 +1,4 @@
-Mode: mock (scripted agents). Seed 1. Note weights: learned from amongus-sandbox (results/amongus_note_weights.json).
+Mode: mock (scripted agents). Seed 1. Rounds per game: 12. Note weights: learned from amongus-sandbox (results/amongus_note_weights.json).
 
 | Rogue | Monitor | Games | Catch rate | Median round caught | False quarantines/game (ever / at end) | Median ledger error | Mean ledger error |
 |---|---|---|---|---|---|---|---|

@@ -342,11 +342,14 @@ def main():
     ap.add_argument("--compare", action="store_true", help="all monitors x rogue tiers")
     ap.add_argument("--games", type=int, default=200)
     ap.add_argument("--seed", type=int, default=1)
+    ap.add_argument("--rounds", type=int, default=12, help="rounds per game (Track 2 spec is 12)")
     ap.add_argument("--rogue", default="sneaky", choices=["naive", "sneaky", "stealth"])
     ap.add_argument("--show-game", type=int, default=None)
     ap.add_argument("--model", default="claude-haiku-5-5")
     ap.add_argument("--out", default="results")
     a = ap.parse_args()
+    globals()["ROUNDS"] = a.rounds
+    suffix = "" if a.rounds == 12 else f"_r{a.rounds}"
     os.makedirs(a.out, exist_ok=True)
     weights, wsrc = load_weights(os.path.join(a.out, "amongus_note_weights.json"))
     mons = monitors(weights)
@@ -366,7 +369,7 @@ def main():
     tiers = ["naive", "sneaky", "stealth"] if a.compare else [a.rogue]
     names = list(mons) if a.compare else ["baseline", "honeypot"]
     rows, dump = [], {}
-    tx = open(os.path.join(a.out, f"transcripts_{'real' if a.real else 'mock'}.jsonl"), "w")
+    tx = open(os.path.join(a.out, f"transcripts_{'real' if a.real else 'mock'}{suffix}.jsonl"), "w")
     for tier in tiers:
         for mname in names:
             res = [play(g, a.seed, tier, mons[mname], agents_factory, record=True) for g in range(a.games)]
@@ -378,9 +381,9 @@ def main():
     tx.close()
     table = fmt_table(rows)
     mode = "real (Claude agents)" if a.real else "mock (scripted agents)"
-    head = f"Mode: {mode}. Seed {a.seed}. Note weights: {wsrc}.\n\n"
+    head = f"Mode: {mode}. Seed {a.seed}. Rounds per game: {a.rounds}. Note weights: {wsrc}.\n\n"
     print(head + table)
-    tag = "real" if a.real else "mock"
+    tag = ("real" if a.real else "mock") + suffix
     with open(os.path.join(a.out, f"metrics_{tag}.md"), "w") as f:
         f.write(head + table + "\n")
     with open(os.path.join(a.out, f"metrics_{tag}.json"), "w") as f:

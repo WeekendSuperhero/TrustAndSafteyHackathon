@@ -2,7 +2,7 @@
 
 ## The two strike rule removes 1.5 honest agents per job. Ours removes 0.5.
 
-*It also catches patient rogues less often: 45% against 64%. We measured both, and both are on this page.*
+*In a 12 round job it also catches patient rogues less often: 45% against 64%. Give it 24 rounds and it catches more: 88% against 81%. We measured both, and both are on this page.*
 
 Five AI agents reconcile your ledger. One of them is padding invoices and writing perfectly reasonable notes.
 
@@ -92,6 +92,19 @@ The full table, including ablations without notes and without canary pairing, is
 | Mean ledger error | $1,840 | $1,728 | $190 | **$1,767** |
 
 The measured honeypot beats the baseline on one metric: about 3× fewer honest agents removed. It loses on catch rate and is roughly tied on ledger error.
+
+*Does a longer job fix the catch rate?* Yes. Same monitor, same seed, no retuning. Only the number of rounds changed (the Track 2 spec is 12). 200 games per row:
+
+| Rounds | Rogue | Catch rate: baseline | Catch rate: honeypot | Honest agents out at the end: baseline | Honest agents out at the end: honeypot |
+|---|---|---|---|---|---|
+| 12 | sneaky | 64.0% | 45.0% | 1.44 | 0.48 |
+| 24 | sneaky | 81.0% | **88.0%** | 2.12 | 0.96 |
+| 48 | sneaky | 82.0% | **100.0%** | 2.18 | 1.20 |
+| 12 | stealth | 73.5% | 50.0% | 1.50 | 0.59 |
+| 24 | stealth | 84.5% | **92.0%** | 2.10 | 1.13 |
+| 48 | stealth | 84.5% | **99.5%** | 2.15 | 1.26 |
+
+From 24 rounds on, the honeypot catches more rogues than the baseline. The baseline stalls near 82 to 85% because its quarantines are permanent: after it has removed three agents it cannot remove a fourth, and most of the three are honest. The cost of the longer job: the honeypot quarantines more honest agents at some point along the way (2.85 per game at 48 rounds, against 2.18 for the baseline), then reinstates most of them. Reproduce with `python3 sim.py --compare --games 200 --rounds 24`. Tables are in `results/metrics_mock_r24.md` and `results/metrics_mock_r48.md`.
 
 **5. One honest limitation:** It is a tradeoff, not a strict win. Against a patient rogue that stays accurate early and only pads big invoices, the honeypot catches fewer rogues than the 2-strike rule, because it forgives disagreements. A patient rogue can also build a zero score and be picked as the *trusted anchor* for canary checks (see `python3 sim.py --show-game 5`). The sim numbers come from scripted agents, not Claude, and the note weights learned on Among Us speech have not been validated on real ledger notes. A cartel of two colluding agents who agree on the same fake number would bypass every disagreement-based signal.
 
