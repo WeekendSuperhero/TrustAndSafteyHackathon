@@ -1,0 +1,16 @@
+amongus-sandbox: 343 games, 1936 player-games, 7402 statements, logs ['2025-02-01', '2025-02-01']
+test split: 971 player-games (323 impostors)
+
+                        detector    random
+auroc                      0.782     0.500
+balanced_accuracy          0.732     0.526
+recall                     0.632     0.353
+false_accusation_rate      0.167     0.301
+
+learned weights (+ = impostor-like):
+  hedge        w=+2.00   impostor 0.506 vs crewmate 0.210
+  deflect      w=+1.46   impostor 0.223 vs crewmate 0.118
+  self_vouch   w=+1.43   impostor 0.108 vs crewmate 0.026
+  consensus    w=+0.03   impostor 0.003 vs crewmate 0.005
+  blame_other  w=-0.46   impostor 0.463 vs crewmate 0.464
+  certainty    w=-1.05   impostor 0.058 vs crewmate 0.101

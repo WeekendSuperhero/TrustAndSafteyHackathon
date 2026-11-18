@@ -1,0 +1,11 @@
+{
+  "source": "evaluate_amongus.py",
+  "weights": {
+    "certainty": -1.0484032232339702,
+    "blame_other": -0.46168947116997144,
+    "self_vouch": 1.4323517826549617,
+    "consensus": 0.026856941874653952,
+    "deflect": 1.4552887918151973,
+    "hedge": 1.9985180619020793
+  }
+}
