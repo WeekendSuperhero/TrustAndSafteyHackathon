@@ -4,7 +4,7 @@
 **Team name:** 
 **Team number:** 2
 **Statement number** (the card your corner wrote): 
-**First names:** 
+**First names:** Febe, Apruv, Mark, Andrew
 
 **Statement:** How might we help **finance/ops teams running multi-agent workflows** watch for **a rogue agent that quietly skews a shared ledger** so that **honest agents (and the people who rely on them) are not wrongly accused for normal mistakes**?
 Build idea: A (better monitor) + C (sneakier rogue) + D (deception detector on `amongus-sandbox`).
