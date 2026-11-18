@@ -6,3 +6,4 @@ results/transcripts_mock_r*.jsonl
 video/soundtrack.wav
 video/stills/
 .wrangler/
+video/x264pass*

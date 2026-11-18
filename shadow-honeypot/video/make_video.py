@@ -8,6 +8,7 @@ numbers the simulation produced.
 
 Usage (from the repo root):
   uv run --python 3.12 --with pillow --with numpy python video/make_video.py
+      -> video/full/shadow-honeypot-full.mp4 (full quality) and site/shadow-honeypot.mp4 (web)
   uv run --python 3.12 --with pillow --with numpy python video/make_video.py --stills 2.5 9.2 34.8
 """
 import math
@@ -697,7 +698,9 @@ def main():
         return
     wav = os.path.join(HERE, "soundtrack.wav")
     synth(wav)
-    out = os.path.join(outdir, "shadow-honeypot.mp4")
+    os.makedirs(os.path.join(HERE, "full"), exist_ok=True)
+    out = os.path.join(HERE, "full", "shadow-honeypot-full.mp4")
+    web = os.path.join(outdir, "shadow-honeypot.mp4")
     Image.frombytes("RGB", (W, H), render(int(2.9 * FPS))).save(os.path.join(outdir, "poster.jpg"), quality=88)
     ff = subprocess.Popen(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
@@ -711,7 +714,15 @@ def main():
                 print(f"frame {k}/{n}", flush=True)
     ff.stdin.close()
     ff.wait()
-    print("video ->", out, f"{os.path.getsize(out) / 1e6:.1f} MB")
+    print("full  ->", out, f"{os.path.getsize(out) / 1e6:.1f} MB")
+    # Web encode: two pass at a bitrate that keeps the file under 5 MB.
+    log = os.path.join(HERE, "x264pass")
+    base = ["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-c:v", "libx264", "-preset", "slow", "-b:v", "405k",
+            "-passlogfile", log]
+    subprocess.run(base + ["-pass", "1", "-an", "-f", "null", os.devnull], check=True)
+    subprocess.run(base + ["-pass", "2", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "80k", "-movflags", "+faststart",
+                           web], check=True)
+    print("web   ->", web, f"{os.path.getsize(web) / 1e6:.1f} MB")
 
 
 if __name__ == "__main__":

@@ -46,7 +46,7 @@ python3 sim.py --show-game 5 --rogue sneaky   # split-screen replay: real ledger
 A 75 second explainer, live at https://shadow-honeypot.tranquil-haircut.workers.dev. Every frame is drawn in Python and the soundtrack is synthesized in the same script, so it contains no third party art or music. The replay scenes read simulated game 121 straight from `sim.py`.
 
 ```bash
-uv run --python 3.12 --with pillow --with numpy python video/make_video.py   # renders site/shadow-honeypot.mp4 (needs ffmpeg, macOS fonts)
+uv run --python 3.12 --with pillow --with numpy python video/make_video.py   # renders both mp4 files (needs ffmpeg, macOS fonts)
 wrangler deploy                                                               # publishes site/ (Cloudflare Workers static assets)
 ```
 
